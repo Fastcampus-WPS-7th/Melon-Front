@@ -14,7 +14,6 @@ function getAuthToken (username, password) {
     var token = response.data.token;
     var user = response.data.user;
     setCookie('token', token, 7);
-    
     setUserInfo(user);
   }).catch(function (error) {
     console.log(error);

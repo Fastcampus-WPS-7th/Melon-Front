@@ -10,13 +10,16 @@
 </head>
 <body>
   <h1>Melon Front!</h1>
-  <p id="user-info" class="none"></p>
   
+  <p id="user-info" class="none"></p>
   <form action="" method="post" id="login">
     <input type="text" id="input-username" name="username" placeholder="ID">
     <input type="password" id="input-password" name="password" placeholder="PW">
     <button class="btn">로그인!</button>
   </form>
+  <button class="btn" id="btn-logout">로그아웃</button>
+  
+  <button id="btn-facebook" class="btn">페이스북 로그인</button>
   <a href="artist-list.html">Artist List</a>
   
   <script src="js/cookie.js"></script>
@@ -27,6 +30,51 @@
   <script src="js/init-user-info.js"></script>
   <script>
     initUserInfo();
+    
+    $('#btn-logout').click(function () {
+      eraseCookie('token');
+      $('#user-info').addClass('none');
+      $('form#login').removeClass('none');
+    });
+    $('#btn-facebook').click(function () {
+      facebookLogin();
+    });
+    function facebookLogin () {
+      // 이 브라우저가 페이스북 로그인이 되어있는지 검사
+      var accessToken;
+      FB.getLoginStatus(function (response) {
+        // 만약 로그인 되어있지 않다면
+        if (response.status != 'connected') {
+          // 로그인 대화상자를 사용해 로그인 유도
+          FB.login(function (response) {
+            // 로그인이 완료되면 accessToken을 가져와서
+            accessToken = response.authResponse.accessToken;
+            // DRF에 Facebook access_token을 사용한 AuthToken요청
+          });
+        } 
+        else {
+          accessToken = response.authResponse.accessToken;
+        }
+        // 무조건 auth-token을 가져옴
+        axios({
+          url: 'http://localhost:8000/api/members/facebook-auth-token/',
+          method: 'post',
+          data: {
+            access_token: accessToken
+          }
+        }).then(function (response) {
+          // 요청에 성공하면 setCookie및 setUserInfo실행
+          var token = response.data.token;
+          var user = response.data.user;
+          setCookie('token', token, 7);
+          setUserInfo(user);
+        }).catch(function (error) {
+          console.log(error);
+          console.log(error.response);
+        });
+      });  
+    }
+    
   </script>
 </body>
 </html>
