@@ -10,6 +10,7 @@
   <h1>Melon Front!</h1>
   <a href="artist-list.html">Artist List</a>
   
+  <script src="js/cookie.js"></script>
   <script src="js/axios.js"></script>
   <script src="js/jquery-3.3.1.min.js"></script>
   <script>
@@ -17,6 +18,22 @@
     // function getAuthToken (username, password) {}
     //   주어진 매개변수 username과 password를 axios로 전달하고
     //   돌아온 'token'값을 console.log에 출력
+    function getAuthToken (username, password) {
+      axios({
+        url: 'http://localhost:8000/api/members/auth-token/',
+        method: 'post',
+        data: {
+          username: username,
+          password: password
+        }
+      }).then(function (response) {
+        var token = response.data.token;
+        setCookie('token', token, 7);
+      }).catch(function (error) {
+        console.log(error);
+        console.log(error.response);
+      });
+    }
     
     // 2. form#login을 구현
     //  username, password를 받는 input2개와
