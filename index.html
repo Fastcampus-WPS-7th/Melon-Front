@@ -5,9 +5,12 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>Melon Front</title>
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/index.css">
 </head>
 <body>
   <h1>Melon Front!</h1>
+  <p id="user-info" class="none"></p>
   
   <form action="" method="post" id="login">
     <input type="text" id="input-username" name="username" placeholder="ID">
@@ -34,8 +37,15 @@
         }
       }).then(function (response) {
         var token = response.data.token;
+        var user = response.data.user;
         setCookie('token', token, 7);
-        console.log(token);
+        
+        // 유저정보를 표시할 요소에 텍스트를 채움
+        $('#user-info').text(user.username + ' (으)로 로그인 중');
+        // 이후 해당 요소의 'none'클래스 속성을 삭제
+        $('#user-info').removeClass('none');
+        // form#login에 'none'클래스 추가
+        $('form#login').addClass('none');
       }).catch(function (error) {
         console.log(error);
         console.log(error.response);
